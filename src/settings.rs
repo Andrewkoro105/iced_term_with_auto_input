@@ -17,12 +17,14 @@ pub struct Settings {
 #[derive(Debug, Clone)]
 pub struct BackendSettings {
     pub shell: String,
+    pub input: bool
 }
 
 impl Default for BackendSettings {
     fn default() -> Self {
         Self {
             shell: DEFAULT_SHELL.to_string(),
+            input: true,
         }
     }
 }

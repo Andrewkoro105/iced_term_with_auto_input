@@ -136,6 +136,7 @@ pub struct Backend {
     notifier: Notifier,
     last_content: RenderableContent,
     pub url_regex: RegexSearch,
+    input: bool,
 }
 
 impl Backend {
@@ -143,7 +144,7 @@ impl Backend {
         id: u64,
         event_sender: mpsc::Sender<Event>,
         settings: BackendSettings,
-        font_size: Size<f32>,
+        font_size: Size<f32>
     ) -> Result<Self> {
         let pty_config = tty::Options {
             shell: Some(tty::Shell::new(settings.shell, vec![])),
@@ -183,6 +184,7 @@ impl Backend {
             notifier,
             last_content: initial_content,
             url_regex,
+            input: settings.input,
         })
     }
 
@@ -206,7 +208,7 @@ impl Backend {
                     _ => {},
                 };
             },
-            BackendCommand::Write(input) => {
+            BackendCommand::Write(input) => if self.input {
                 self.write(input);
                 term.scroll_display(Scroll::Bottom);
             },
@@ -462,7 +464,7 @@ impl Backend {
         }
     }
 
-    fn write<I: Into<Cow<'static, [u8]>>>(&self, input: I) {
+    pub(crate) fn write<I: Into<Cow<'static, [u8]>>>(&self, input: I) {
         self.notifier.notify(input);
     }
 

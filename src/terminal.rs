@@ -29,7 +29,7 @@ pub struct Terminal {
     pub(crate) cache: Cache,
     pub(crate) bindings: BindingsLayout,
     pub(crate) backend: Option<Backend>,
-    backend_settings: BackendSettings,
+    backend_settings: BackendSettings
 }
 
 impl Terminal {
@@ -58,7 +58,7 @@ impl Terminal {
                         self.id,
                         sender,
                         self.backend_settings.clone(),
-                        self.font.measure,
+                        self.font.measure
                     )
                     .unwrap_or_else(|_| {
                         panic!("init pty with ID: {} is failed", self.id);
@@ -96,6 +96,12 @@ impl Terminal {
         }
 
         action
+    }
+
+    pub fn input(&mut self, str: String) {
+        if let Some(ref mut backend) = self.backend {
+            backend.write(str.into_bytes());
+        }
     }
 
     fn sync_and_redraw(&mut self) {
